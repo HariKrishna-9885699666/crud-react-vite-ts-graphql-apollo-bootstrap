@@ -79,7 +79,7 @@ const FloatingIcon: React.FC = () => {
                 <ListGroup variant="flush">
                   <ListGroup.Item>React Bootstrap</ListGroup.Item>
                   <ListGroup.Item>React Icons</ListGroup.Item>
-                  <ListGroup.Item>Apollo GraphQL</ListGroup.Item>
+                  <ListGroup.Item>Tensorflow</ListGroup.Item>
                 </ListGroup>
               </Accordion.Body>
             </Accordion.Item>
