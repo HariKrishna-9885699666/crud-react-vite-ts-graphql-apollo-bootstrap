@@ -252,8 +252,13 @@ const CommentList: React.FC<CommentListProps> = ({ comments, postId }) => {
                 </Form.Text>
               )}
             </Form.Group>
-            <Button variant="primary" type="submit" className="mt-2">
-              Add Comment
+            <Button
+              variant="primary"
+              type="submit"
+              className="mt-2"
+              disabled={mutationLoading}
+            >
+              {mutationLoading ? "Adding..." : "Add Comment"}
             </Button>
           </Form>
         </Modal.Body>

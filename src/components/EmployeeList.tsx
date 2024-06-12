@@ -78,6 +78,9 @@ const CREATE_EMPLOYEE = gql`
 const EmployeeList: React.FC = () => {
   const [addEmployeeError, setAddEmployeeError] = useState<Error | null>(null);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
+  const [deletingEmployeeId, setDeletingEmployeeId] = useState<number | null>(
+    null
+  );
   const {
     register,
     handleSubmit,
@@ -85,19 +88,25 @@ const EmployeeList: React.FC = () => {
     reset,
   } = useForm<EmployeeFormValues>();
 
-  const [createEmployee] = useMutation(CREATE_EMPLOYEE, {
-    refetchQueries: [{ query: GET_EMPLOYEES }],
-  });
+  const [createEmployee, { loading: createEmployeeLoading }] = useMutation(
+    CREATE_EMPLOYEE,
+    {
+      refetchQueries: [{ query: GET_EMPLOYEES }],
+    }
+  );
 
   const {
     loading: getEmployeesLoading,
     error: getEmployeesError,
     data,
   } = useQuery(GET_EMPLOYEES);
-  const [deleteEmployee] = useMutation(DELETE_EMPLOYEE, {
-    refetchQueries: [{ query: GET_EMPLOYEES }],
-    awaitRefetchQueries: true,
-  });
+  const [deleteEmployee, { loading: deleteEmployeeLoading }] = useMutation(
+    DELETE_EMPLOYEE,
+    {
+      refetchQueries: [{ query: GET_EMPLOYEES }],
+      awaitRefetchQueries: true,
+    }
+  );
 
   const handleDelete = async (id: number) => {
     const willDelete = await swal({
@@ -109,8 +118,16 @@ const EmployeeList: React.FC = () => {
     });
 
     if (willDelete) {
-      await deleteEmployee({ variables: { id } });
-      swal("Employee has been deleted!", { icon: "success" });
+      try {
+        setDeletingEmployeeId(id); // Set the ID of the employee being deleted
+        await deleteEmployee({ variables: { id } });
+        swal("Employee has been deleted!", { icon: "success" });
+      } catch (error) {
+        swal("Error deleting employee!", { icon: "error" });
+        console.error("Error deleting employee:", error);
+      } finally {
+        setDeletingEmployeeId(null); // Reset the deletingEmployeeId state
+      }
     }
   };
 
@@ -185,8 +202,14 @@ const EmployeeList: React.FC = () => {
                   <Button
                     variant="outline-danger"
                     onClick={() => handleDelete(employee.id)}
+                    disabled={
+                      deleteEmployeeLoading &&
+                      deletingEmployeeId === employee.id
+                    }
                   >
-                    Delete
+                    {deleteEmployeeLoading && deletingEmployeeId === employee.id
+                      ? "Deleting..."
+                      : "Delete"}
                   </Button>
                 </td>
               </tr>
@@ -341,8 +364,12 @@ const EmployeeList: React.FC = () => {
               )}
             </Form.Group>
 
-            <Button variant="primary" type="submit">
-              Save Changes
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={createEmployeeLoading}
+            >
+              {createEmployeeLoading ? "Saving..." : "Save Changes"}
             </Button>
           </Form>
           {/* Display the error related to adding an employee */}

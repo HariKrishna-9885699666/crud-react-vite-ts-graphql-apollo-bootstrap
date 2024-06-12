@@ -132,16 +132,6 @@ const EmployeeDetails: React.FC = () => {
     }
   };
 
-  // Loading and Error States for GET_EMPLOYEE Query
-  if (loading || deletePostLoading)
-    return (
-      <div className="d-flex justify-content-center">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
-    );
-
   if (error) return <Alert variant="danger">Error: {error.message}</Alert>;
 
   const handlePostClick = (post: any) => {
@@ -221,7 +211,15 @@ const EmployeeDetails: React.FC = () => {
             </Card.Body>
           </Card>
           <h2 className="mt-4">Posts</h2>
-
+          
+          {/* Loading indicator while fetching, deleting, or creating comments */}
+        {loading || deletePostLoading || createPostLoading ? (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : (
           <ListGroup className="mt-2">
             {data.getEmployee.posts.length > 0 ? (
               data.getEmployee.posts.map((post: any) => (
@@ -260,6 +258,7 @@ const EmployeeDetails: React.FC = () => {
               </ListGroup.Item>
             )}
           </ListGroup>
+          )}
         </>
       ) : (
         <PostDetails post={selectedPost} />
