@@ -4,7 +4,7 @@ This is a simple blog post operations using react, vite, typescript, graphql, ap
 
 ## Live Demo
 
-You can check out the live demo of the application here: [Blog post operations Demo](https://crud-react-vite-ts-graphql-apollo.netlify.app/)
+You can check out the live demo of the application here: [Blog post operations Demo](https://crud-react-vite-ts-apollo-graphql.netlify.app/)
 
 ## Prerequisites
 
