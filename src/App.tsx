@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.tsx
+import React from "react";
+import { ApolloProvider } from "@apollo/client";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import client from "./graphql/client";
+import EmployeeList from "./components/EmployeeList";
+import EmployeeDetails from "./components/EmployeeDetails";
+import FloatingIcon from "./FloatingIcon";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ApolloProvider client={client}>
+      <Router>
+        <div className="container my-5">
+          <header
+            className="d-flex justify-content-center align-items-center mb-5"
+            style={{ backgroundColor: "#f0f0f0", padding: "2rem" }}
+          >
+            <h3 className="text-center text-dark">
+              <Link to={`/`} className="text-decoration-none text-dark">
+                Blog post operations using react, vite, typescript, graphql,
+                apollo, bootstrap
+              </Link>
+            </h3>
+          </header>
+          <Routes>
+            <Route path="/" element={<EmployeeList />} />
+            <Route path="/employee/:id" element={<EmployeeDetails />} />
+          </Routes>
+        </div>
+      </Router>
+      <FloatingIcon />
+    </ApolloProvider>
+  );
+};
 
-export default App
+export default App;
