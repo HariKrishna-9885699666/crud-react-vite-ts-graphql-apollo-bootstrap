@@ -86,7 +86,6 @@ const CommentList: React.FC<CommentListProps> = ({ comments, postId }) => {
 
   const {
     loading,
-    error,
     data: employeeData,
     refetch: refetchEmployee,
   } = useQuery(GET_EMPLOYEE, {
