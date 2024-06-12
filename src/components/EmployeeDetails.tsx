@@ -98,19 +98,22 @@ const EmployeeDetails: React.FC = () => {
     await createPost({ variables: { ...data, employeeId: Number(id) } });
   };
 
-  const [deletePost, { loading: deletePostLoading }] = useMutation(DELETE_POST, {
-    refetchQueries: [{ query: GET_EMPLOYEE, variables: { id: Number(id) } }],
-    onCompleted: () => {
-      swal("Post Deleted!", { icon: "success" });
-      if (selectedPost) {
-        setSelectedPost(null); // Clear selectedPost after deletion
-      }
-    },
-    onError: (error) => {
-      swal("Error deleting post!", { icon: "error" });
-      console.error("Error deleting post:", error);
-    },
-  });
+  const [deletePost, { loading: deletePostLoading }] = useMutation(
+    DELETE_POST,
+    {
+      refetchQueries: [{ query: GET_EMPLOYEE, variables: { id: Number(id) } }],
+      onCompleted: () => {
+        swal("Post Deleted!", { icon: "success" });
+        if (selectedPost) {
+          setSelectedPost(null); // Clear selectedPost after deletion
+        }
+      },
+      onError: (error) => {
+        swal("Error deleting post!", { icon: "error" });
+        console.error("Error deleting post:", error);
+      },
+    }
+  );
 
   const handleDeletePost = async (postId: number) => {
     const willDelete = await swal({
@@ -131,6 +134,16 @@ const EmployeeDetails: React.FC = () => {
       }
     }
   };
+
+  // Loading and Error States for GET_EMPLOYEE Query
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
 
   if (error) return <Alert variant="danger">Error: {error.message}</Alert>;
 
@@ -174,7 +187,7 @@ const EmployeeDetails: React.FC = () => {
         </Col>
       </Row>
 
-      {!selectedPost ? (
+      {!selectedPost && data ? (
         <>
           <Card className="my-3">
             <Card.Header>
@@ -211,58 +224,58 @@ const EmployeeDetails: React.FC = () => {
             </Card.Body>
           </Card>
           <h2 className="mt-4">Posts</h2>
-          
+
           {/* Loading indicator while fetching, deleting, or creating comments */}
-        {loading || deletePostLoading || createPostLoading ? (
-          <div className="d-flex justify-content-center">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        ) : (
-          <ListGroup className="mt-2">
-            {data.getEmployee.posts.length > 0 ? (
-              data.getEmployee.posts.map((post: any) => (
-                <ListGroup.Item
-                  key={post.id}
-                  action
-                  active={selectedPost?.id === post.id}
-                >
-                  <Row>
-                    <Col className="text-start">{post.title}</Col>
-                    <Col className="text-end">
-                      <Badge bg="secondary">
-                        {new Date(parseInt(post.createdAt)).toLocaleString()}
-                      </Badge>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-primary ms-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handlePostClick(post)}
-                        title="View Post"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className="text-danger ms-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleDeletePost(post.id)}
-                        title="Delete Post"
-                      />
-                    </Col>
-                  </Row>
+          {loading || deletePostLoading || createPostLoading ? (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          ) : (
+            <ListGroup className="mt-2">
+              {data.getEmployee.posts.length > 0 ? (
+                data.getEmployee.posts.map((post: any) => (
+                  <ListGroup.Item
+                    key={post.id}
+                    action
+                    active={selectedPost?.id === post.id}
+                  >
+                    <Row>
+                      <Col className="text-start">{post.title}</Col>
+                      <Col className="text-end">
+                        <Badge bg="secondary">
+                          {new Date(parseInt(post.createdAt)).toLocaleString()}
+                        </Badge>
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className="text-primary ms-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handlePostClick(post)}
+                          title="View Post"
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-danger ms-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleDeletePost(post.id)}
+                          title="Delete Post"
+                        />
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                ))
+              ) : (
+                <ListGroup.Item>
+                  <div className="text-center">No posts found</div>
                 </ListGroup.Item>
-              ))
-            ) : (
-              <ListGroup.Item>
-                <div className="text-center">No posts found</div>
-              </ListGroup.Item>
-            )}
-          </ListGroup>
+              )}
+            </ListGroup>
           )}
         </>
-      ) : (
+      ) : selectedPost ? (
         <PostDetails post={selectedPost} />
-      )}
+      ) : null}
       <Modal
         show={showCreatePostModal}
         onHide={() => setShowCreatePostModal(false)}
